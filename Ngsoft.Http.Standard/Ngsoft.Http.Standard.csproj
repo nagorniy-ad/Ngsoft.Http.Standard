@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Contains HttpBuilder class for incapsulation most recently using HttpClient features</Description>
+    <Authors>Aleksandr Nagorniy</Authors>
+    <Company>Aleksandr Nagorniy</Company>
+    <Copyright>Copyright © Aleksandr Nagorniy</Copyright>
+  </PropertyGroup>
+
+</Project>

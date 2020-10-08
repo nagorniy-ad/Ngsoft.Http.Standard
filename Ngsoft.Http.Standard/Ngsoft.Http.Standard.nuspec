@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Aleksandr Nagorniy</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <repository type="git" url="https://github.com/nagorniy-ad/Ngsoft.Http.Standard.git" />
+    <icon>logo.png</icon> 
+    <description>Contains HttpBuilder class for incapsulation most recently using HttpClient features</description>
+    <releaseNotes>First public release.</releaseNotes>
+    <copyright>$copyright$</copyright>
+    <tags>http</tags>
+  </metadata>
+  <files>
+    <file src="logo.png" />
+    </files>
+</package>
