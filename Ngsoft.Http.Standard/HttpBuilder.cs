@@ -3,19 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ngsoft.Http
 {
     public class HttpBuilder
     {
+        private const string HTTP_REQUEST_FAILED = "HTTP request failed.";
+        private const string AUTHORIZATION_HEADER_NAME = "Authorization";
         private static readonly HttpClient _http = new HttpClient();
         private readonly HttpRequestMessage _message;
-        private string _body;
+        private string _body = string.Empty;
         private string _mediaType;
-        private Encoding _encoding;
+        private Encoding _encoding = Encoding.UTF8;
         private MultipartFormDataContent _multipartForm;
         private FormUrlEncodedContent _encodedForm;
+        private int _timeout = 20000;
 
         public HttpBuilder(Uri url)
         {
@@ -117,12 +121,11 @@ namespace Ngsoft.Http
                 throw new ArgumentNullException(nameof(password));
             }
 
-            var authorizationHeaderName = "Authorization";
-            TryRemoveHeader(authorizationHeaderName);
+            TryRemoveHeader(AUTHORIZATION_HEADER_NAME);
             var value = Encoding
                 .GetEncoding("ISO-8859-1")
                 .GetBytes($"{username}:{password}");
-            _message.Headers.Add(authorizationHeaderName, $"Basic {Convert.ToBase64String(value)}");
+            _message.Headers.Add(AUTHORIZATION_HEADER_NAME, $"Basic {Convert.ToBase64String(value)}");
             return this;
         }
 
@@ -133,16 +136,38 @@ namespace Ngsoft.Http
                 throw new ArgumentException("Token cannot be empty.", nameof(token));
             }
 
-            var authorizationHeaderName = "Authorization";
-            TryRemoveHeader(authorizationHeaderName);
-            _message.Headers.Add(authorizationHeaderName, $"Bearer {token}");
+            TryRemoveHeader(AUTHORIZATION_HEADER_NAME);
+            _message.Headers.Add(AUTHORIZATION_HEADER_NAME, $"Bearer {token}");
+            return this;
+        }
+
+        public HttpBuilder SetTimeout(int timeout)
+        {
+            if (timeout <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(timeout), "Timeout value cannot be negative or zero.");
+            }
+
+            _timeout = timeout;
             return this;
         }
 
         public async Task<HttpResponseMessage> RequestAsync()
         {
             _message.Content = GetContent();
-            return await _http.SendAsync(_message);
+            var cts = new CancellationTokenSource(_timeout);
+            try
+            {
+                return await _http.SendAsync(_message, cts.Token);
+            }
+            catch (HttpRequestException e)
+            {
+                throw new InvalidOperationException(HTTP_REQUEST_FAILED, e);
+            }
+            catch (TaskCanceledException e)
+            {
+                throw new InvalidOperationException(HTTP_REQUEST_FAILED, e);
+            }
 
             HttpContent GetContent()
             {
@@ -159,8 +184,8 @@ namespace Ngsoft.Http
                     return _encodedForm;
                 }
                 return _mediaType == null ?
-                    new StringContent(content: _body ?? string.Empty, encoding: _encoding ?? Encoding.UTF8) :
-                    new StringContent(content: _body ?? string.Empty, encoding: _encoding ?? Encoding.UTF8, mediaType: _mediaType);
+                    new StringContent(_body, _encoding) :
+                    new StringContent(_body, _encoding, _mediaType);
             }
         }
 
