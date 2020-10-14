@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package >
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
+    <id>Ngsoft.Http.Standard</id>
+    <version>1.0.1</version>
+    <title>Ngsoft.Http.Standard</title>
     <authors>Aleksandr Nagorniy</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <repository type="git" url="https://github.com/nagorniy-ad/Ngsoft.Http.Standard.git" />
-    <icon>logo.png</icon> 
+    <icon>Ngsoft.Http.Standard.png</icon> 
     <description>Contains HttpBuilder class for incapsulation most recently using HttpClient features</description>
-    <releaseNotes>First public release.</releaseNotes>
-    <copyright>$copyright$</copyright>
-    <tags>http</tags>
+    <releaseNotes>1. Added basic authorization feature.
+    2. Added timeout feature.
+    3. Added code comments for all public methods.</releaseNotes>
+    <copyright>Copyright © Aleksandr Nagorniy</copyright>
+    <tags>http httpclient</tags>
   </metadata>
   <files>
-    <file src="logo.png" />
+    <file src="Ngsoft.Http.Standard.png" />
     </files>
 </package>
