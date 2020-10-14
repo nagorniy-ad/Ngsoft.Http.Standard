@@ -21,6 +21,12 @@ namespace Ngsoft.Http
         private FormUrlEncodedContent _encodedForm;
         private int _timeout = 20000;
 
+        /// <summary>
+        /// Creates new <see cref="HttpBuilder"/>.
+        /// </summary>
+        /// <param name="url">The <see cref="Uri"/> for request.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="url"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="url"/> is not HTTP or HTTPS scheme.</exception>
         public HttpBuilder(Uri url)
         {
             if (url == null)
@@ -33,23 +39,47 @@ namespace Ngsoft.Http
                 throw new ArgumentException("URI has to be accessed through HTTP or HTTPS only.", nameof(url));
         }
 
+        /// <summary>
+        /// Creates new <see cref="HttpBuilder"/>.
+        /// </summary>
+        /// <param name="url">The <see cref="Uri"/> for request.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="url"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="url"/> is not HTTP or HTTPS scheme.</exception>
         public static HttpBuilder Create(Uri url)
         {
             return new HttpBuilder(url);
         }
 
+        /// <summary>
+        /// Sets method for request. Default value is <see cref="HttpMethod.Get"/>.
+        /// </summary>
+        /// <param name="method">Request method.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="method"/> is <c>null</c>.</exception>
         public HttpBuilder SetMethod(HttpMethod method)
         {
             _message.Method = method ?? throw new ArgumentNullException(nameof(method));
             return this;
         }
 
+        /// <summary>
+        /// Sets request body.
+        /// </summary>
+        /// <param name="body">Request body.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="body"/> is <c>null</c>.</exception>
         public HttpBuilder SetBody(string body)
         {
             _body = body ?? throw new ArgumentNullException(nameof(body));
             return this;
         }
 
+        /// <summary>
+        /// Sets request body media type.
+        /// </summary>
+        /// <param name="mediaType">Request body media type.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"><paramref name="mediaType"/> is <c>null</c>, empty or whitespace only.</exception>
         public HttpBuilder SetMediaType(string mediaType)
         {
             _mediaType = string.IsNullOrWhiteSpace(mediaType) == false ?
@@ -57,12 +87,26 @@ namespace Ngsoft.Http
             return this;
         }
 
+        /// <summary>
+        /// Sets request body content encoding. Default value is <see cref="Encoding.UTF8"/>.
+        /// </summary>
+        /// <param name="encoding">Request body content encoding.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="encoding"/>is <c>null</c>.</exception>
         public HttpBuilder SetEncoding(Encoding encoding)
         {
             _encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
             return this;
         }
 
+        /// <summary>
+        /// Sets request content as <c>multipart/form-data</c> (if it has not been set already) and adds form field.
+        /// </summary>
+        /// <param name="name">Field name.</param>
+        /// <param name="value">Field value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"><paramref name="name"/> is <c>null</c>, empty or whitespace only.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <c>null</c>.</exception>
         public HttpBuilder SetFormField(string name, string value)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -83,6 +127,12 @@ namespace Ngsoft.Http
             return this;
         }
 
+        /// <summary>
+        /// Sets request content as <c>application/x-www-form-urlencoded</c>.
+        /// </summary>
+        /// <param name="values">Form data.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="values"/> is <c>null</c>.</exception>
         public HttpBuilder SetEncodedForm(IEnumerable<KeyValuePair<string, string>> values)
         {
             if (values == null)
@@ -94,6 +144,14 @@ namespace Ngsoft.Http
             return this;
         }
 
+        /// <summary>
+        /// Sets custom request header.
+        /// </summary>
+        /// <param name="name">Header name.</param>
+        /// <param name="value">Header value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"><paramref name="name"/> is <c>null</c>, empty or whitespace only.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <c>null</c>.</exception>
         public HttpBuilder SetHeader(string name, string value)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -110,6 +168,13 @@ namespace Ngsoft.Http
             return this;
         }
 
+        /// <summary>
+        /// Sets <c>Basic</c> authorization header with provided data.
+        /// </summary>
+        /// <param name="username">Username.</param>
+        /// <param name="password">Password.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="username"/> or <paramref name="password"/> is <c>null</c>.</exception>
         public HttpBuilder SetBasicAuthorization(string username, string password)
         {
             if (username == null)
@@ -129,11 +194,17 @@ namespace Ngsoft.Http
             return this;
         }
 
+        /// <summary>
+        /// Sets <c>Bearer</c> authorization header with provided token value.
+        /// </summary>
+        /// <param name="token">Token.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"><paramref name="token"/> is <c>null</c>.</exception>
         public HttpBuilder SetBearerAuthentication(string token)
         {
-            if (string.IsNullOrWhiteSpace(token))
+            if (token == null)
             {
-                throw new ArgumentException("Token cannot be empty.", nameof(token));
+                throw new ArgumentNullException(nameof(token));
             }
 
             TryRemoveHeader(AUTHORIZATION_HEADER_NAME);
@@ -141,6 +212,12 @@ namespace Ngsoft.Http
             return this;
         }
 
+        /// <summary>
+        /// Sets request timeout. Default value is 20000 (20 seconds). Note that using <see cref="HttpClient"/> timeout value is 100000 (100 seconds) so if greater value will be provided then 100000 value will be used.
+        /// </summary>
+        /// <param name="timeout">Timeout value.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> value is negative or zero.</exception>
         public HttpBuilder SetTimeout(int timeout)
         {
             if (timeout <= 0)
@@ -152,6 +229,11 @@ namespace Ngsoft.Http
             return this;
         }
 
+        /// <summary>
+        /// Processes request with provided options. If selected <see cref="HttpMethod"/> is <see cref="HttpMethod.Get"/> then request content will be <c>null</c>. Else if <see cref="MultipartFormDataContent"/> provided, then request will use it. Else if <see cref="FormUrlEncodedContent"/> provided, then request will use it. Finally if there is no form content will be used <see cref="StringContent"/> with provided <see cref="Encoding"/> and media type (if any).
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">HTTP request failed.</exception>
         public async Task<HttpResponseMessage> RequestAsync()
         {
             _message.Content = GetContent();
