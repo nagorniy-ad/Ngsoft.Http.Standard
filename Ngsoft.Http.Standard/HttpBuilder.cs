@@ -106,6 +106,26 @@ namespace Ngsoft.Http
             return this;
         }
 
+        public HttpBuilder SetBasicAuthorization(string username, string password)
+        {
+            if (username == null)
+            {
+                throw new ArgumentNullException(nameof(username));
+            }
+            if (password == null)
+            {
+                throw new ArgumentNullException(nameof(password));
+            }
+
+            var authorizationHeaderName = "Authorization";
+            TryRemoveHeader(authorizationHeaderName);
+            var value = Encoding
+                .GetEncoding("ISO-8859-1")
+                .GetBytes($"{username}:{password}");
+            _message.Headers.Add(authorizationHeaderName, $"Basic {Convert.ToBase64String(value)}");
+            return this;
+        }
+
         public HttpBuilder SetBearerAuthentication(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -144,7 +164,7 @@ namespace Ngsoft.Http
             }
         }
 
-        #region private        
+        #region private
 
         private void TryRemoveHeader(string name)
         {
